@@ -8,7 +8,7 @@ if (!document.getElementById('rpg-casino-fa')) {
 }
 
 // Data Persistence & Currency Utilities
-let CASINO_STORAGE_KEY = 'casinoDashboardData';
+if (!CASINO_STORAGE_KEY) let CASINO_STORAGE_KEY = 'casinoDashboardData';
 let defaultCasinoData = () => ({
     onjat: {
         wins: 0,
