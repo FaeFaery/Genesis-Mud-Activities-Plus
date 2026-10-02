@@ -1756,29 +1756,29 @@
             return 2 * ev;
         };
 
-        const DH_HIT_MARGIN = 0.03;      // hit only if it beats standing by this much (in antes)
-        const DH_DOUBLE_MARGIN = 0.05;   // double only if it beats the best non-double by this much
-        const DH_DOUBLE_MIN_EV = 0.10;   // and is at least this profitable outright
-        
         const decideDhAction = (allowDouble, isFirstMove) => {
             const ctx = dhBuildContext(dhDealerHand, dhDealerHoleCardHidden, [...dhPlayerHand, ...getOtherPlayersKnownCards()]);
             const s = dhStateFromCards(dhPlayerHand);
             dhWork = 0;
             dhWorkLimit = 1500000;
-        
+
             const best = dhBestNode(ctx, s, ctx.counts, ctx.N, DH_EXACT_DEPTH);
-            let action = best.hitEV > best.standEV + DH_HIT_MARGIN ? 'hit' : 'stand';
-            let ev = action === 'hit' ? best.hitEV : best.standEV;
-        
-            let doubleEV = null;
+            let action = best.action,
+                ev = best.ev;
+
             if (allowDouble && isFirstMove) {
-                doubleEV = dhDoubleEV(ctx, s, ctx.counts, ctx.N);
-                if (doubleEV > ev + DH_DOUBLE_MARGIN && doubleEV >= DH_DOUBLE_MIN_EV) {
+                const d = dhDoubleEV(ctx, s, ctx.counts, ctx.N);
+                if (d > ev) {
                     action = 'double';
-                    ev = doubleEV;
+                    ev = d;
                 }
             }
-            return { action, ev, hitEV: best.hitEV, standEV: best.standEV, doubleEV };
+            return {
+                action,
+                ev,
+                hitEV: best.hitEV,
+                standEV: best.standEV
+            };
         };
 
         const updateDhUI = () => {
